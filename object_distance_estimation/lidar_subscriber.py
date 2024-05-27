@@ -20,13 +20,33 @@ class LidarSubscriber(Node):
         # Initialize the plot
         self.fig, self.ax = plt.subplots()
         self.ln, = plt.plot([], [], 'bo', markersize=2)
-        plt.xlim(-10, 10)
-        plt.ylim(-10, 10)
-        plt.xlabel('X (m)')
-        plt.ylabel('Y (m)')
-        plt.title('LIDAR Scan')
+        self.ax.set_xlim(-10, 10)
+        self.ax.set_ylim(-10, 10)
+        self.ax.set_xlabel('X (m)')
+        self.ax.set_ylabel('Y (m)')
+        self.ax.set_title('LIDAR Scan')
+
+        # Add angle markers
+        self.add_angle_markers()
+
         plt.ion()
         plt.show()
+
+    def add_angle_markers(self):
+        # Add lines at 0, 90, 180, 270 degrees
+        angles = [0, 90, 180, 270]
+        for angle in angles:
+            rad = np.deg2rad(angle)
+            x = [0, 10 * np.cos(rad)]
+            y = [0, 10 * np.sin(rad)]
+            self.ax.plot(x, y, 'r--')
+
+        # Add annotations for the angles
+        self.ax.text(10, 0, '0°', color='red', fontsize=12, ha='center')
+        self.ax.text(0, 10, '90°', color='red', fontsize=12, ha='center')
+        self.ax.text(-10, 0, '180°', color='red', fontsize=12, ha='center')
+        self.ax.text(0, -10, '270°', color='red', fontsize=12, ha='center')
+        self.ax.text(10, 0, '360°', color='red', fontsize=12, ha='center')  # 360° is same as 0°
 
     def listener_callback(self, msg):
         # Calculate angles
