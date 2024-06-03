@@ -17,7 +17,7 @@ class LidarSectorSubscriber(Node):
             10)
         self.subscription  # prevent unused variable warning
         
-        self.size = 1
+        self.size = 4
 
         # Initialize the plot
         self.fig, self.ax = plt.subplots()
