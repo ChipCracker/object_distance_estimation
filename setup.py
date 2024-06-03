@@ -22,7 +22,8 @@ setup(
         'console_scripts': [
 		'lidar_subscriber = object_distance_estimation.lidar_subscriber:main',
         'lidar_camera_fov_viz = object_distance_estimation.lidar_camera_fov_viz:main',
-		'cam_visualisation = object_distance_estimation.cam_visualisation:main'
+		'cam_visualisation = object_distance_estimation.cam_visualisation:main',
+        'image_preprocessor_node = object_distance_estimation.image_preprocessor_node:main'
         ],
     },
 )
