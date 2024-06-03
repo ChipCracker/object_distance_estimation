@@ -13,15 +13,15 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='puzzlebot',
-    maintainer_email='codres_ali@yahoo.com',
+    maintainer='Christopher Witzl',
+    maintainer_email='christopher.witzl@gmx.de',
     description='TODO: Package description',
     license='TODO: License declaration',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
 		'lidar_subscriber = object_distance_estimation.lidar_subscriber:main',
-		'cam_visualization = object_distance_estimation.cam_visualisation:main'
+		'cam_visualisation = object_distance_estimation.cam_visualisation:main'
         ],
     },
 )
