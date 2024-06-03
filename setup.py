@@ -21,6 +21,7 @@ setup(
     entry_points={
         'console_scripts': [
 		'lidar_subscriber = object_distance_estimation.lidar_subscriber:main',
+        'lidar_camera_fov_viz = object_distance_estimation.lidar_camera_fov_viz:main',
 		'cam_visualisation = object_distance_estimation.cam_visualisation:main'
         ],
     },

@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 class LidarSubscriber(Node):
-
     def __init__(self):
         super().__init__('lidar_subscriber')
         self.subscription = self.create_subscription(
@@ -43,10 +42,9 @@ class LidarSubscriber(Node):
 
         # Add annotations for the angles
         self.ax.text(10, 0, '0°', color='red', fontsize=12, ha='center')
-        self.ax.text(0, 10, '90°', color='red', fontsize=12, ha='center')
-        self.ax.text(-10, 0, '180°', color='red', fontsize=12, ha='center')
-        self.ax.text(0, -10, '270°', color='red', fontsize=12, ha='center')
-        self.ax.text(10, 0, '360°', color='red', fontsize=12, ha='center')  # 360° is same as 0°
+        self.ax.text(0, 10, '90°', color='red', fontsize=12, va='bottom', ha='center')
+        self.ax.text(-10, 0, '180° (forward)', color='red', fontsize=12, va='center', ha='right')  # Adjusted alignment
+        self.ax.text(0, -10, '270°', color='red', fontsize=12, va='top', ha='center')
 
     def listener_callback(self, msg):
         # Calculate angles
