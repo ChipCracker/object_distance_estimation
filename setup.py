@@ -23,7 +23,9 @@ setup(
 		'lidar_subscriber = object_distance_estimation.lidar_subscriber:main',
         'lidar_camera_fov_viz = object_distance_estimation.lidar_camera_fov_viz:main',
 		'cam_visualisation = object_distance_estimation.cam_visualisation:main',
-        'image_preprocessor_node = object_distance_estimation.image_preprocessor_node:main'
+        'image_preprocessor_node = object_distance_estimation.image_preprocessor_node:main',
+        'lidar_camera_overlay = object_distance_estimation.lidar_camera_overlay:main',
+        'lidar_fov_preprocessor_node = object_distance_estimation.lidar_fov_preprocessor_node:main'
         ],
     },
 )
