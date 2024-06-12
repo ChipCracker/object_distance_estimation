@@ -4,15 +4,10 @@ import numpy as np
 import cv2
 from sensor_msgs.msg import Image, LaserScan
 from cv_bridge import CvBridge, CvBridgeError
-import open3d as o3d
-
 class LidarCameraOverlay(Node):
     def __init__(self):
         super().__init__('lidar_camera_overlay')
         self.bridge = CvBridge()
-        self.vis = o3d.visualization.Visualizer()
-        self.vis.create_window("Open3D", width=800, height=600)
-        self.pcd = o3d.geometry.PointCloud()
 
         # Camera intrinsic matrix with new focal lengths
         fx = 1107.275337695818
@@ -87,15 +82,6 @@ class LidarCameraOverlay(Node):
                 y_lidar = distance * np.sin(angle)
                 z_lidar = 0.08  # Adjust if needed for actual LIDAR height
                 points.append([x_lidar, y_lidar, z_lidar])
-
-        # Transform points to camera frame
-        points_camera_frame = np.dot(self.transformation_matrix[:3, :3], np.array(points).T).T + self.transformation_matrix[:3, 3]
-        self.pcd.points = o3d.utility.Vector3dVector(points_camera_frame)
-        self.vis.add_geometry(self.pcd)
-        self.vis.update_geometry(self.pcd)
-        self.vis.poll_events()
-        self.vis.update_renderer()
-
 
         if self.current_image is not None:
             overlay_image = self.overlay_lidar_on_image(msg, self.current_image.copy())
