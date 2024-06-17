@@ -4,16 +4,32 @@ import numpy as np
 import cv2
 from sensor_msgs.msg import Image, LaserScan
 from cv_bridge import CvBridge, CvBridgeError
+import open3d as o3d
+from geometry_msgs.msg import TransformStamped
+
 class LidarCameraOverlay(Node):
     def __init__(self):
         super().__init__('lidar_camera_overlay')
         self.bridge = CvBridge()
 
-        # Camera intrinsic matrix with new focal lengths
-        fx = 1107.275337695818
-        fy = 1185.2143866315462
-        cx = 640  # Center x-coordinate
-        cy = 360  # Center y-coordinate
+        # Image dimensions
+        image_width = 640
+        image_height = 480
+
+        # Camera principal points
+        cx = image_width / 2
+        cy = image_height / 2
+
+        # Field of View
+        fov = 55  # degrees
+
+        # Convert FOV from degrees to radians for calculation
+        fov_rad = np.deg2rad(fov)
+
+        # Calculate focal length based on horizontal FOV
+        fx = image_width / (2 * np.tan(fov_rad / 2))
+        fy = fx  # Assuming aspect ratio is 1 (square pixels)
+
         self.camera_matrix = np.array([
             [fx, 0, cx],
             [0, fy, cy],
@@ -22,128 +38,75 @@ class LidarCameraOverlay(Node):
         self.dist_coeffs = np.zeros((4, 1))  # Zero distortion coefficients
 
         # Initial transformation settings
-        self.tx = -1.6#-0.04
-        self.ty = -0.88 # 0
-        self.tz = 3.8#0.08 
-        self.roll = 102
-        self.pitch = 70
-        self.yaw = -2
-        self.update_transformation_matrix()
+        self.tx = -0.04
+        self.ty = 0
+        self.tz = 0.08
+        self.roll = 0
+        self.pitch = 0
+        self.yaw = 0
 
-        # Subscriptions to image and LIDAR data
+        # Transformation matrix from LiDAR to camera coordinates
+        self.transformation_matrix = self.calculate_transformation_matrix()
+
+        # Subscriptions to image and LiDAR data
         self.image_sub = self.create_subscription(
             Image, '/image_raw', self.image_callback, 10)
         self.lidar_sub = self.create_subscription(
-            LaserScan, '/scan/fov', self.lidar_callback, 10)
-        
+            LaserScan, '/scan', self.lidar_callback, 10)
+
+        # Storage for sensor data
         self.current_image = None
+        self.lidar_points = None
 
-    def update_transformation_matrix(self):
-        # Create rotation matrices from current roll, pitch, yaw
-        Rx = np.array([
-            [1, 0, 0],
-            [0, np.cos(np.radians(self.roll)), -np.sin(np.radians(self.roll))],
-            [0, np.sin(np.radians(self.roll)), np.cos(np.radians(self.roll))]
-        ])
-        
-        Ry = np.array([
-            [np.cos(np.radians(self.pitch)), 0, np.sin(np.radians(self.pitch))],
-            [0, 1, 0],
-            [-np.sin(np.radians(self.pitch)), 0, np.cos(np.radians(self.pitch))]
-        ])
-        
-        Rz = np.array([
-            [np.cos(np.radians(self.yaw)), -np.sin(np.radians(self.yaw)), 0],
-            [np.sin(np.radians(self.yaw)), np.cos(np.radians(self.yaw)), 0],
-            [0, 0, 1]
-        ])
-
-        # Combined rotation matrix
-        R = Rz @ Ry @ Rx
-
-        self.transformation_matrix = np.array([
-            [R[0, 0], R[0, 1], R[0, 2], self.tx],
-            [R[1, 0], R[1, 1], R[1, 2], self.ty],
-            [R[2, 0], R[2, 1], R[2, 2], self.tz],
-            [0, 0, 0, 1]
-        ])
+    def calculate_transformation_matrix(self):
+        # Compute the rotation matrix from Euler angles
+        R = o3d.geometry.get_rotation_matrix_from_xyz((self.roll, self.pitch, self.yaw))
+        # Create transformation matrix
+        T = np.eye(4)
+        T[:3, :3] = R
+        T[:3, 3] = [self.tx, self.ty, self.tz]
+        return T
 
     def image_callback(self, msg):
         try:
-            self.current_image = self.bridge.imgmsg_to_cv2(msg, "bgr8")
+            cv_image = self.bridge.imgmsg_to_cv2(msg, "bgr8")
+            self.current_image = cv_image
+            if self.lidar_points is not None:
+                self.overlay_lidar_on_image()
         except CvBridgeError as e:
-            self.get_logger().error(f'Error converting image: {str(e)}')
+            self.get_logger().error(f'Failed to convert image: {str(e)}')
 
     def lidar_callback(self, msg):
-        points = []
-        for angle, distance in zip(np.arange(msg.angle_min, msg.angle_max, msg.angle_increment), np.array(msg.ranges)):
-            if np.isfinite(distance) and distance > 0:
-                x_lidar = distance * np.cos(angle)
-                y_lidar = distance * np.sin(angle)
-                z_lidar = 0.08  # Adjust if needed for actual LIDAR height
-                points.append([x_lidar, y_lidar, z_lidar])
+        ranges = np.array(msg.ranges)
+        # Filter out points with 'inf' or 'nan' values which can mess up transformations
+        finite_ranges = np.isfinite(ranges)
+        ranges = ranges[finite_ranges]
+        angles = np.linspace(msg.angle_min, msg.angle_max, len(ranges))
+    
+        points = np.vstack((np.cos(angles) * ranges, np.sin(angles) * ranges, np.zeros_like(ranges)))
+        points = np.vstack((points, np.ones(points.shape[1])))  # Homogeneous coordinates
 
+
+        # Transform LiDAR points to camera coordinates
+        transformed_points = np.dot(self.transformation_matrix, points)
+        self.lidar_points = transformed_points
         if self.current_image is not None:
-            overlay_image = self.overlay_lidar_on_image(msg, self.current_image.copy())
-            cv2.imshow("LIDAR overlay on Image", overlay_image)
-            key = cv2.waitKey(1) & 0xFF
-            if key == ord('q'):
-                cv2.destroyAllWindows()
-            self.handle_key_input(key)
+            self.overlay_lidar_on_image()
 
-    def handle_key_input(self, key):
-        translation_step = 0.2  # Step size for translation adjustments
-        rotation_step = 2  # Step size for rotation adjustments (in degrees)
+    def overlay_lidar_on_image(self):
+        image_points, _ = cv2.projectPoints(self.lidar_points[:3].T.reshape(-1, 1, 3),
+                                            np.zeros((3, 1)), np.zeros((3, 1)),
+                                            self.camera_matrix, self.dist_coeffs)
+        
+        
+        for pt in image_points:
+            x, y = pt.ravel()
+            print(x,y)
+            cv2.circle(self.current_image, (int(x), int(y)), 2, (0, 255, 0), -1)
 
-        if key == ord('w'):
-            self.tz += translation_step
-        elif key == ord('s'):
-            self.tz -= translation_step
-        elif key == ord('a'):
-            self.tx -= translation_step
-        elif key == ord('d'):
-            self.tx += translation_step
-        elif key == ord('r'):
-            self.ty += translation_step
-        elif key == ord('f'):
-            self.ty -= translation_step
-
-        elif key == ord('t'):
-            self.pitch += rotation_step
-        elif key == ord('g'):
-            self.pitch -= rotation_step
-        elif key == ord('h'):
-            self.yaw += rotation_step
-        elif key == ord('j'):
-            self.yaw -= rotation_step
-        elif key == ord('i'):
-            self.roll += rotation_step
-        elif key == ord('k'):
-            self.roll -= rotation_step
-
-        self.update_transformation_matrix()
-        print(f"Updated transformation: tx={self.tx}, ty={self.ty}, tz={self.tz}, roll={self.roll}, pitch={self.pitch}, yaw={self.yaw}")
-
-    def overlay_lidar_on_image(self, lidar_data, image):
-        for angle, distance in zip(np.arange(lidar_data.angle_min, lidar_data.angle_max, lidar_data.angle_increment), np.array(lidar_data.ranges)):
-            if np.isfinite(distance) and distance > 0:
-                x_lidar = distance * np.cos(angle)
-                y_lidar = distance * np.sin(angle)
-                z_lidar = 0.08  # Adjust if needed for actual LIDAR height
-                point_lidar = np.array([x_lidar, y_lidar, z_lidar, 1])
-                point_camera = np.dot(self.transformation_matrix, point_lidar)
-                if point_camera[2] > 0:
-                    point_image = np.dot(self.camera_matrix, point_camera[:3])
-                    if point_image[2] != 0:
-                        point_image /= point_image[2]
-                        x_img, y_img = int(point_image[0]), int(point_image[1])
-                        if 0 <= x_img < image.shape[1] and 0 <= y_img < image.shape[0]:
-                            cv2.circle(image, (x_img, y_img), 2, (0, 255, 0), -1)
-                        else:
-                            print(f"Point out of image bounds: {x_img}, {y_img}")
-                else:
-                    print(f"Point behind camera or on camera plane: {point_camera}")
-        return image
+        # Display the image
+        cv2.imshow('LiDAR overlay', self.current_image)
+        cv2.waitKey(1)
 
 def main(args=None):
     rclpy.init(args=args)

@@ -22,6 +22,11 @@ class CamVisualisation(Node):
         try:
             # Convert ROS image to OpenCV image
             cv_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
+
+            # Print the dimensions of the image
+            height, width, channels = cv_image.shape
+            print(f"Image dimensions: {width}x{height}")
+            
             # Display the image
             cv2.imshow("Camera Image", cv_image)
             cv2.waitKey(1)  # Display the image for 1 ms
