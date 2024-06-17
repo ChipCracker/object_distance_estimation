@@ -15,7 +15,7 @@ class LidarFOVPreProcessor(Node):
             10)
         self.publisher = self.create_publisher(
             LaserScan,
-            '/scan/fov',
+            '/scan',
             10)
 
         # Define the angular sector
