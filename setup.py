@@ -33,6 +33,10 @@ setup(
         'lidar_to_camera_transformation_node = object_distance_estimation.lidar_to_camera_transformation_node:main',
         # for visualizing the distance between the camera and the object
         'image_distance_visualizer_node = object_distance_estimation.image_distance_visualizer_node:main',
+        # for estimating the depths of the objects in the camera image
+        'depth_estimator_node = object_distance_estimation.depth_estimator_node:main',
+        # for showing the depth image
+        'depth_visualizer_node = object_distance_estimation.depth_visualizer_node:main',
         ],
     },
 )
