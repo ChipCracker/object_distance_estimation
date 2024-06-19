@@ -20,10 +20,13 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+        # Testing and debugging
         # for plotting the 2D LiDAR scan
 		'lidar_2d_plotter_node = object_distance_estimation.lidar_2d_plotter_node:main',
         # for preprocessing the image and undistorting it
         'image_preprocessor_node = object_distance_estimation.image_preprocessor_node:main',
+
+        # For actual object distance estimation                
         # for overlaying the LiDAR points on the camera image within one step
         'lidar_camera_overlay = object_distance_estimation.lidar_camera_overlay:main',
         # for transforming LiDAR points to camera coordinates
