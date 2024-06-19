@@ -6,7 +6,7 @@ from sensor_msgs.msg import LaserScan
 import matplotlib.pyplot as plt
 import numpy as np
 
-class LidarSubscriber(Node):
+class Lidar2DPlotterNode(Node):
     def __init__(self):
         super().__init__('lidar_subscriber')
         self.subscription = self.create_subscription(
@@ -64,7 +64,7 @@ class LidarSubscriber(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    lidar_subscriber = LidarSubscriber()
+    lidar_subscriber = Lidar2DPlotterNode()
     rclpy.spin(lidar_subscriber)
 
     # Destroy the node explicitly (optional - done automatically when garbage collected)

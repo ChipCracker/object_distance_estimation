@@ -20,14 +20,16 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-		'lidar_subscriber = object_distance_estimation.lidar_subscriber:main',
-        'lidar_camera_fov_viz = object_distance_estimation.lidar_camera_fov_viz:main',
-		'cam_visualisation = object_distance_estimation.cam_visualisation:main',
+        # for plotting the 2D LiDAR scan
+		'lidar_2d_plotter_node = object_distance_estimation.lidar_2d_plotter_node:main',
+        # for preprocessing the image and undistorting it
         'image_preprocessor_node = object_distance_estimation.image_preprocessor_node:main',
+        # for overlaying the LiDAR points on the camera image within one step
         'lidar_camera_overlay = object_distance_estimation.lidar_camera_overlay:main',
+        # for transforming LiDAR points to camera coordinates
         'lidar_to_camera_transformation_node = object_distance_estimation.lidar_to_camera_transformation_node:main',
+        # for visualizing the distance between the camera and the object
         'image_distance_visualizer_node = object_distance_estimation.image_distance_visualizer_node:main',
-        'lidar_fov_preprocessor_node = object_distance_estimation.lidar_fov_preprocessor_node:main',
         ],
     },
 )
