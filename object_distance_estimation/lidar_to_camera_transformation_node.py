@@ -39,7 +39,7 @@ def cam_matrix_1():
     #[  0.         772.54833996 240.        ]
     #[  0.           0.           1.        ]]
 
-class LidarFusionNode(Node):
+class Lidar_to_Camera_Transformation_Node(Node):
     def __init__(self):
         super().__init__('lidar_camera_overlay')
         # Initialize publishers
@@ -157,7 +157,7 @@ class LidarFusionNode(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    node = LidarFusionNode()
+    node = Lidar_to_Camera_Transformation_Node()
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
