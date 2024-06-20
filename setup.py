@@ -37,6 +37,8 @@ setup(
         'depth_estimator_node = object_distance_estimation.depth_estimator_node:main',
         # for showing the depth image
         'depth_visualizer_node = object_distance_estimation.depth_visualizer_node:main',
+        # For fusing the depth data from LiDAR and the estimated depth data
+        'depth_fusion_node = object_distance_estimation.depth_fusion_node:main'
         ],
     },
 )

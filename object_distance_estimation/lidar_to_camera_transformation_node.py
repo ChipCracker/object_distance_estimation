@@ -142,6 +142,9 @@ class Lidar_to_Camera_Transformation_Node(Node):
         # Combine image points and depth into a single array
         image_points_depth = np.hstack((image_points.reshape(-1, 2), depth[:, None]))
 
+        # print min max of depth
+        # print(np.min(image_points_depth[:, 2]), np.max(image_points_depth[:, 2]))
+
         # Ensure all elements are floats
         image_points_depth = image_points_depth.astype(np.float32)
 
