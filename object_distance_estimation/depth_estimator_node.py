@@ -5,6 +5,7 @@ import numpy as np
 import torch
 import torchvision.transforms as T
 from PIL import Image
+from std_msgs.msg import Float32MultiArray  # Import Float32MultiArray for publishing depth data
 from sensor_msgs.msg import Image as ROSImage
 from cv_bridge import CvBridge, CvBridgeError
 
@@ -12,7 +13,7 @@ class DepthEstimatorNode(Node):
     def __init__(self):
         super().__init__('midas_depth_estimator')
         self.bridge = CvBridge()
-        self.publisher = self.create_publisher(ROSImage, '/depth_image', 10)
+        self.publisher = self.create_publisher(Float32MultiArray, '/depth_data', 10)  # Publish depth data, not image
         self.subscription = self.create_subscription(
             ROSImage, '/image_raw', self.image_callback, 10)
         self.model = torch.hub.load("intel-isl/MiDaS", "MiDaS_small")
@@ -29,11 +30,11 @@ class DepthEstimatorNode(Node):
     def image_callback(self, msg):
         try:
             frame = self.bridge.imgmsg_to_cv2(msg, "bgr8")
-            print("Frame received")
             depth_map = self.estimate_depth(frame)
-            print(depth_map.shape)
-            depth_image = self.bridge.cv2_to_imgmsg(depth_map, encoding="passthrough")
-            self.publisher.publish(depth_image)
+            depth_array_msg = Float32MultiArray()  # Create a Float32MultiArray message
+            depth_array_msg.data = depth_map.flatten().tolist()  # Flatten the depth map and convert to list
+
+            self.publisher.publish(depth_array_msg)  # Publish the depth data
         except CvBridgeError as e:
             self.get_logger().error(f'Failed to convert image: {str(e)}')
 
