@@ -7,6 +7,15 @@
   <maintainer email="christopher.witzl@gmx.de">object_distance_estimation</maintainer>
   <license>TODO: License declaration</license>
 
+  <!-- FOR YOLOV5 Object Detection-->
+  <depend>sensor_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>cv_bridge</depend>
+  <depend>opencv_python_headless</depend>
+  <depend>torch</depend>
+  <depend>torchvision</depend>
+  <depend>yolov5</depend>
+  
   <depend>rclpy</depend>
   <depend>numpy</depend>
   <depend>example_interfaces</depend>

@@ -32,7 +32,7 @@ class DepthFusionNode(Node):
             if 0 <= int(x) < 640 and 0 <= int(y) < 480:
                 self.lidar_depth_map[int(y), int(x)] = depth
 
-        interpolate = False  # Set to True to interpolate missing depth values
+        interpolate = True  # Set to True to interpolate missing depth values
         if interpolate:
             # Interpolate missing depths in each row
             for y in range(self.lidar_depth_map.shape[0]):
