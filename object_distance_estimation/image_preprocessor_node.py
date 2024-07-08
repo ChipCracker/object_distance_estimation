@@ -25,7 +25,12 @@ class ImagePreProcessor(Node):
 
         print(os.listdir())
         # Load camera calibration parameters
-        with open('~/ros_ws/src/object_distance_estimation/object_distance_estimation/calibration.pkl', 'rb') as f:
+        # print current directory
+        print(os.getcwd())
+
+        pkl_path = os.path.join(os.getcwd(), 'src/object_distance_estimation/object_distance_estimation/calibration.pkl')
+
+        with open(pkl_path, 'rb') as f:
             self.camera_matrix, self.dist_coeffs = pickle.load(f)
 
     def image_callback(self, msg):
