@@ -84,25 +84,26 @@ class VisualizationNode(Node):
 
             # Überprüfen, ob die Mittelpunkte innerhalb der Bildgrenzen liegen
             if 0 <= center_x < 640 and 0 <= center_y < 480:
-
                 # Abrufen der Tiefe an der Mittelpunktkoordinate
                 distance = self.fused_depth_map[center_y, center_x]
-                
-                # Ausgabe der Detektionsinformationen zur Information --> DEBUG
-                # TODO: Entfernen wenn nicht mehr gebraucht wird
-                # self.get_logger().info(f'Detected {label} at ({center_x}, {center_y}) with distance {distance:.2f}m')
             else:
                 distance = float('inf') 
 
-            # Zusätzliche Debugging-Informationen --> Informationen die über der Box angezeigt werden
-            # TODO: Entfernen wenn nicht mehr gebraucht wird
-            # self.get_logger().info(f'BBox: ({x1}, {y1}), ({x2}, {y2}) Center: ({center_x}, {center_y}) Distance: {distance}')
-
+            # Zeichnen des Rechtecks um das erkannte Objekt
             cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-            cv2.putText(frame, f'{label}: {confidence:.2f}', 
-                        (x1, y1 - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
-            cv2.putText(frame, f'Dist: {distance:.2f}m', 
-                        (x1, y1 - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+
+            # Setzen des Textes innerhalb der Bounding Box
+            text_position_label = (x1 + 10, y2 - 30)
+            text_position_distance = (x1 + 10, y2 - 10)
+
+            # Beschriftung mit Label und Genauigkeit
+            cv2.putText(frame, f'{label}: {confidence:.2f}', text_position_label, 
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+
+            # Beschriftung mit Distanz
+            cv2.putText(frame, f'Dist: {distance:.2f}m', text_position_distance, 
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
+
         cv2.imshow('Detections', frame)
         cv2.waitKey(1)
 

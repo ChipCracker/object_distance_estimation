@@ -35,14 +35,17 @@ class ImageDistanceVisualizer(Node):
     def distance_callback(self, msg):
         # Process the incoming distance data
         distance_data = np.array(msg.data, dtype=np.float32).reshape(-1, 3)
+
+        # distance_data[np.isnan(distance_data)] = 0
+        # distance_data[np.isinf(distance_data)] = 0
         self.current_distances = distance_data
         self.display_image_with_distances()
 
     def display_image_with_distances(self):
         if self.current_image is not None and self.current_distances is not None:
             # Get maximum distance for normalization
-            max_distance = np.max(self.current_distances[:, 2]) if self.current_distances[:, 2].size > 0 else 1
-            
+            max_distance = np.max(self.current_distances[:, 2]) if self.current_distances[:, 2].size > 0 else 1            
+
             # Overlay color on the image based on distance
             for point in self.current_distances:
                 x, y, distance = int(point[0]), int(point[1]), point[2]

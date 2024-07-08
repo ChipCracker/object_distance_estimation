@@ -27,7 +27,7 @@ class YOLOv5Node(Node):
         
         # Laden des YOLOv5-Modells von ultralytics
         # yolov5s = small Modell
-        self.model = torch.hub.load('ultralytics/yolov5', 'yolov5s')  
+        self.model = torch.hub.load('ultralytics/yolov5', 'yolov5l')  
 
     # Callback-Funktion, wenn eine neue Bildnachricht empfangen wird
     def listener_callback(self, msg):
@@ -39,11 +39,12 @@ class YOLOv5Node(Node):
         detections = []
         for result in results.xyxy[0].cpu().numpy():  
             x1, y1, x2, y2, conf, cls = result  
-            detections.append({
+            if conf > 0.45:  # Confidence threshold
+                detections.append({
                 'label': self.model.names[int(cls)],  # Klassifizierungsinformationen
                 'bbox': [int(x1), int(y1), int(x2), int(y2)],  # Bounding Box Koordinaten
                 'confidence': float(conf)  # Konfidenz der Erkennung
-            })
+                })
 
         self.publisher.publish(String(data=json.dumps(detections)))
 

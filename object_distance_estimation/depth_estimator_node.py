@@ -49,7 +49,7 @@ class DepthEstimatorNode(Node):
                 mode="bilinear",
                 align_corners=False
             ).squeeze()
-        return prediction.cpu().numpy()
+        return -1.0/prediction.cpu().numpy()
 
 def main(args=None):
     rclpy.init(args=args)

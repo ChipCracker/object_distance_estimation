@@ -21,15 +21,11 @@ class DepthFusionNode(Node):
 
     def lidar_callback(self, msg):
         data = np.array(msg.data).reshape((-1, 3))
-        
-        # print min max depth
-        #print(min(data[:, 2]), max(data[:, 2]))
-
         self.lidar_depth_map.fill(0)  # Reset the depth map
 
-        # Update the depth map with available LiDAR data
+        # Update the depth map with available LiDAR data, ignoring NaN values
         for x, y, depth in data:
-            if 0 <= int(x) < 640 and 0 <= int(y) < 480:
+            if 0 <= int(x) < self.image_width and 0 <= int(y) < self.image_height and not np.isnan(depth) and not np.isinf(depth):
                 self.lidar_depth_map[int(y), int(x)] = depth
 
         interpolate = True  # Set to True to interpolate missing depth values
@@ -100,9 +96,16 @@ class DepthFusionNode(Node):
                     # Calculate the relative depth difference between the current pixel's estimated depth and the reference estimated depth
                     relative_depth = estimated_column[y] - reference_estimated_depth
 
+                    # Instead of this calculation use a kalman filter to estimate the depth
                     # Adjust the depth of the current pixel based on the relative depth and the scale of the reference LiDAR depth
                     # This assumes a linear relationship between the change in estimated depth and actual depth
                     column[y] = reference_depth + (relative_depth * reference_depth / reference_estimated_depth)
+                    
+                    #if reference_estimated_depth != 0:
+                    #    scaling_factor = reference_depth / reference_estimated_depth
+                    #    column[y] = reference_depth + (relative_depth * scaling_factor)
+                    #else:
+                    #    column[y] = reference_depth  # Default to LiDAR depth if no valid estimated depth is available
 
             # Update the fused depth map with the adjusted column values
             fused_depth_map[:, x] = column
