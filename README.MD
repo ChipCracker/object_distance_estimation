@@ -15,6 +15,7 @@ This package, object_distance_estimation, provides tools for estimating the dist
     •	YOLOv5 
 	•	sllidar node 
 	•	v2l4 node
+	•	CamerCalibration scripts
 	
 ## 2. Sllidar ros2 node installation
 1. Visit the official repository (https://github.com/Slamtec/sllidar_ros2)
@@ -24,11 +25,23 @@ This package, object_distance_estimation, provides tools for estimating the dist
 1. Visit the official v2l4 ros2  node repository (https://gitlab.com/boldhearts/ros2_v4l2_camera)
 2. Follow the install instructions
 
-## 4. Installation : 
+## 4. Download and Calibration of the webcam
+1. clone this repo (https://github.com/ChipCracker/CameraCalibration)
+2. capture the calibration images
+3. perform the calibration
+
+## 5. Installation : 
 Ensure ROS 2 and the aforementioned Python libraries are installed on your system. Then, clone this package into your ROS workspace and compile it using colcon:
 ``` bash
 cd ~/ros_workspace/src
 git clone <repository_url> object_distance_estimation
+```
+Now copy the `calibration.pkl` file, that has been created from the calibration step, to this directory `~/ros_workspace/src/object_distance_estimation/object_distance_estimation`.\
+If you want to skip this step a default one is used for the [hp320 FHD webcam](https://www.hp.com/de-de/shop/product.aspx?id=53x26aa&opt=abb&sel=acc)
+
+Then execute this:
+
+``` bash
 cd ~/ros_workspace
 colcon build --packages-select object_distance_estimation
 source install/setup.bash
