@@ -13,8 +13,18 @@ This package, object_distance_estimation, provides tools for estimating the dist
     •	Torch 
     •	Torchvision 
     •	YOLOv5 
+	•	sllidar node 
+	•	v2l4 node
+	
+## 2. Sllidar ros2 node installation
+1. Visit the official repository (https://github.com/Slamtec/sllidar_ros2)
+2. Follow the install instructions
 
-## 2.	Installation: 
+## 3. v2l4 ros2 node installation
+1. Visit the official v2l4 ros2  node repository (https://gitlab.com/boldhearts/ros2_v4l2_camera)
+2. Follow the install instructions
+
+## 4. Installation : 
 Ensure ROS 2 and the aforementioned Python libraries are installed on your system. Then, clone this package into your ROS workspace and compile it using colcon:
 ``` bash
 cd ~/ros_workspace/src
@@ -51,33 +61,7 @@ source install/setup.bash
 	•	Run Command: `ros2 run object_distance_estimation visualization_node`
 
 # Running the System
-To operate the system, follow these steps in separate terminal windows:
-
-#### 1.	Start the camera:
-`sh start_camera.sh`
-
-#### 2.	Start the LiDAR:
-`sh start_lidar.sh`
-
-#### 3.	Run the transformation node:
-`ros2 run object_distance_estimation lidar_to_camera_transformation_node`
-
-#### 4. Run the depth estimation node:
-`ros2 run object_distance_estimation depth_estimator_node`
-
-#### 5.	Run the visualization node:
-`ros2 run object_distance_estimation image_distance_visualizer_node`
-
-#### 6. Run the depth fusion node:
-`ros2 run object_distance_estimation depth_fusion_node`
-
-#### 7. Run the yolov5 node:
-`ros2 run object_distance_estimation yolov5_node`
-
-#### 8. Run the visualizer node:
-`ros2 run object_distance_estimation visualization_node`
-
-# Overview of Node Interactions and Data Flow
+To operate the system, execute the `start_depth_estimation.sh script` in the scripts folder, this will start all necessary nodes.
 
 ## Main Data Flow:
 
