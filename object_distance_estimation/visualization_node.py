@@ -90,13 +90,13 @@ class VisualizationNode(Node):
                 
                 # Ausgabe der Detektionsinformationen zur Information --> DEBUG
                 # TODO: Entfernen wenn nicht mehr gebraucht wird
-                self.get_logger().info(f'Detected {label} at ({center_x}, {center_y}) with distance {distance:.2f}m')
+                # self.get_logger().info(f'Detected {label} at ({center_x}, {center_y}) with distance {distance:.2f}m')
             else:
                 distance = float('inf') 
 
             # Zusätzliche Debugging-Informationen --> Informationen die über der Box angezeigt werden
             # TODO: Entfernen wenn nicht mehr gebraucht wird
-            self.get_logger().info(f'BBox: ({x1}, {y1}), ({x2}, {y2}) Center: ({center_x}, {center_y}) Distance: {distance}')
+            # self.get_logger().info(f'BBox: ({x1}, {y1}), ({x2}, {y2}) Center: ({center_x}, {center_y}) Distance: {distance}')
 
             cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
             cv2.putText(frame, f'{label}: {confidence:.2f}', 
