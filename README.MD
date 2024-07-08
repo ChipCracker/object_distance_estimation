@@ -16,6 +16,13 @@ This package, object_distance_estimation, provides tools for estimating the dist
 	•	sllidar node 
 	•	v2l4 node
 	•	CamerCalibration scripts
+
+## 1.1. Install the python dependencies
+``` bash
+sudo apt install python3-pip -y
+
+pip3 install torch open3d torchvision pandas timm numpy==1.26.4
+```
 	
 ## 2. Sllidar ros2 node installation
 1. Visit the official repository (https://github.com/Slamtec/sllidar_ros2)
