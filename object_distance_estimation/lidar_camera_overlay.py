@@ -63,7 +63,7 @@ class LidarCameraOverlay(Node):
 
         # Subscriptions to image and LiDAR data
         self.image_sub = self.create_subscription(
-            Image, '/image_raw', self.image_callback, 10)
+            Image, '/image/undistorted', self.image_callback, 10)
         self.lidar_sub = self.create_subscription(
             LaserScan, '/scan', self.lidar_callback, 10)
 

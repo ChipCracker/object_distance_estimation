@@ -15,7 +15,7 @@ class DepthEstimatorNode(Node):
         self.bridge = CvBridge()
         self.publisher = self.create_publisher(Float32MultiArray, '/depth_data', 10)  # Publish depth data, not image
         self.subscription = self.create_subscription(
-            ROSImage, '/image_raw', self.image_callback, 10)
+            ROSImage, '/image/undistorted', self.image_callback, 10)
         self.model = torch.hub.load("intel-isl/MiDaS", "MiDaS_small")
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model.to(self.device)

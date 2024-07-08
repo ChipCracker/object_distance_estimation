@@ -16,7 +16,7 @@ class ImageDistanceVisualizer(Node):
         
         # Subscribe to the image and distance data topics
         self.image_sub = self.create_subscription(
-            Image, '/image_raw', self.image_callback, 10)
+            Image, '/image/undistorted', self.image_callback, 10)
         self.distance_sub = self.create_subscription(
             Float32MultiArray, '/lidar_pixel_distances', self.distance_callback, 10)
         

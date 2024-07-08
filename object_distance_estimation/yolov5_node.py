@@ -16,7 +16,7 @@ class YOLOv5Node(Node):
         # Subscriber auf das '/image_raw'-Topic, um Bilddaten der Webcam/Kamera zu empfangen
         self.subscription = self.create_subscription(
             Image,
-            '/image_raw',
+            '/image/undistorted',
             self.listener_callback,
             10) 
         

@@ -20,7 +20,7 @@ class VisualizationNode(Node):
         # Subscriber für das '/image_raw'-Topic, um Bilder zu empfangen
         self.image_subscription = self.create_subscription(
             Image,
-            '/image_raw',
+            '/image/undistorted',
             self.image_callback,
             10)  
         

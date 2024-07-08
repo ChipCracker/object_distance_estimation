@@ -14,7 +14,7 @@ class DepthVisualizerNode(Node):
         self.bridge = CvBridge()
         self.publisher = self.create_publisher(ROSImage, '/depth_image', 10)
         self.subscription = self.create_subscription(
-            ROSImage, '/image_raw', self.image_callback, 10)
+            ROSImage, '/image/undistorted', self.image_callback, 10)
         
         #model_type = "DPT_Large"
         #model_type = "DPT_Hybrid"
